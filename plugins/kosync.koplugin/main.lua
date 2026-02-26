@@ -951,11 +951,14 @@ function KOSync:onKOSyncToggleAutoSync(toggle, from_menu)
         return true
     end
     -- Actively recommend switching the before wifi action to "turn_on" instead of prompt,
+    -- and enabling auto_restore_wifi,
     -- as prompt will just not be practical (or even plain usable) here.
     if not self.settings.auto_sync
-            and Device:hasSeamlessWifiToggle()
-            and G_reader_settings:readSetting("wifi_enable_action") ~= "turn_on" then
-        UIManager:show(InfoMessage:new{ text = _("You will have to switch the 'Action when Wi-Fi is off' Network setting to 'turn on' to be able to enable this feature!") })
+            and (Device:hasSeamlessWifiToggle()
+            and G_reader_settings:readSetting("wifi_enable_action") ~= "turn_on" or
+            Device:hasWifiRestore() and
+            not G_reader_settings:isTrue("auto_restore_wifi")) then
+        UIManager:show(InfoMessage:new{ text = _("You will have to switch the 'Action when Wi-Fi is off' to 'turn on' and enable 'Restore Wi-Fi connection on resume', both in Network settings, to be able to enable this feature!") })
         return true
     end
     self.settings.auto_sync = not self.settings.auto_sync
